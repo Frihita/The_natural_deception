@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE NATURAL DECEPTION</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0B0016;
+            font-family: 'Poppins', sans-serif;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        .deck-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 40px;
+            background: linear-gradient(90deg, #FF00CC, #00FFFF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(255, 0, 204, 0.5);
+        }
+
+        .card-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card-wrapper {
+            width: 100%;
+            height: 260px;
+            perspective: 1000px;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(11, 0, 22, 0.9), rgba(40, 0, 60, 0.7));
+            border: 1px solid transparent;
+            background-clip: padding-box;
+            overflow: hidden;
+        }
+
+        .card-face::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 12px;
+            padding: 1px;
+            background: linear-gradient(135deg, #FF00CC, #00FFFF);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            z-index: -1;
+        }
+
+        .card-face:hover::before {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 5px rgba(255, 0, 204, 0.7), 0 0 10px rgba(0, 255, 255, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(255, 0, 204, 0.9), 0 0 30px rgba(0, 255, 255, 0.7);
+            }
+            100% {
+                box-shadow: 0 0 5px rgba(255, 0, 204, 0.7), 0 0 10px rgba(0, 255, 255, 0.5);
+            }
+        }
+
+        .card-front {
+            z-index: 2;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        .select-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 4px;
+            background-color: transparent;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .select-btn:hover {
+            border-color: #00FFFF;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .select-btn.selected {
+            background-color: #00FFFF;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+        }
+
+        .select-btn.selected::after {
+            content: '✓';
+            color: #0B0016;
+            font-weight: bold;
+        }
+
+        .question {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .answer {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .explanation {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.4;
+        }
+
+        .next-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FF00CC, #00FFFF);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .card.flipped .next-btn {
+            opacity: 1;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
+        }
+
+        .next-btn::after {
+            content: '›';
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0B0016;
+        }
+
+        .card-content {
+            max-width: 90%;
+        }
+
+        @media (max-width: 480px) {
+            .deck-title {
+                font-size: 2rem;
+            }
+            
+            .question {
+                font-size: 1.3rem;
+            }
+            
+            .answer {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="deck-title">THE NATURAL DECEPTION</h1>
+    
+    <div class="card-container">
+        <!-- Card 1 -->
+        <div class="card-wrapper">
+            <div class="card" id="card1">
+                <div class="card-face card-front">
+                    <button class="select-btn" onclick="toggleSelect(event, this)"></button>
+                    <div class="card-content">
+                        <p class="question">Lemon or capsicum — which contains more Vitamin C?</p>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="card-content">
+                        <p class="answer">Capsicum actually has nearly double the Vitamin C compared to lemon per 100 grams.</p>
+                        <p class="explanation">Don't assume sour means more Vitamin C.</p>
+                    </div>
+                    <button class="next-btn" onclick="scrollToNext()"></button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card 2 -->
+        <div class="card-wrapper">
+            <div class="card" id="card2">
+                <div class="card-face card-front">
+                    <button class="select-btn" onclick="toggleSelect(event, this)"></button>
+                    <div class="card-content">
+                        <p class="question">Honey or jaggery — which is the healthier alternative to sugar?</p>
+                    </div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="card-content">
+                        <p class="answer">Neither is a 'health food.' Both are sugar sources. Jaggery has trace minerals, but the calorie and sugar content are almost identical.</p>
+                        <p class="explanation">Natural sugar is still sugar.</p>
+                    </div>
+                    <button class="next-btn" onclick="scrollToNext()"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Flip card functionality
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Don't flip if clicking on select button or next button
+                if (e.target.classList.contains('select-btn') || e.target.classList.contains('next-btn')) {
+                    return;
+                }
+                this.classList.toggle('flipped');
+            });
+        });
+
+        // Toggle select button
+        function toggleSelect(event, button) {
+            event.stopPropagation();
+            button.classList.toggle('selected');
+        }
+
+        // Scroll to next card
+        function scrollToNext() {
+            const currentCard = event.target.closest('.card-wrapper');
+            const nextCard = currentCard.nextElementSibling;
+            
+            if (nextCard) {
+                nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                // If there's no next card, scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Add smooth scroll behavior
+        document.documentElement.style.scrollBehavior = 'smooth';
+    </script>
+</body>
+</html>
